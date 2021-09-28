@@ -1,0 +1,133 @@
+server.c & client.c                User Manual              server.c & client.c
+
+NAMES
+    server        -   display server that is able to share multiple processes at
+                    the same time. This is an improved version of Task 2.
+    client        - connects to the display server via inter-process
+                    communication.
+    runstandalone - executable file to run any of the servers described above.
+                    Allows user to access the Virtual Terminal by clicking
+                    [RightCtrl+F7] or [RightCtrl+F8] buttons.
+
+DESCRIPTION
+    server
+      - Receives connections of up to 5 clients (users).
+      - Receives client names and messages to separate windows.
+      - Allows clients to shutdown the server by click of a 'shutdown' button.
+    client
+      - sends any information to be displayed from the Terminal on the server.
+
+COMPILATION & EXECUTION
+    1. Open your terminal (by default in Ubuntu Mate: right click within the
+    folder -> Open in Terminal) where the file server.c is
+    located.
+    2. Enter the following command:
+       gcc server.c -o server;sudo ./runstandalone.sh
+    3. Enter the password of your account requested by the system.
+    4. Server window will launch. Press [RightCtrl+F7] to temporary hide it.
+    5. Open new terminal. Refer to step 1.
+    6. Refer to step 6.1 to manually send message, or to step 6.2 to assign a
+       file that contains a message
+    6.1. Enter the following command:
+            gcc client.c -o client;./client
+    6.1.1. Type any message into the client Terminal and press [CTRL+D] to send
+         the message to the server. Press RightCtrl+F8 to launch server window.
+    6.2. Enter the following command where 'filename' is the name of the file
+         that contains a message:
+            gcc client.c -o client;./client < filename
+    6.2.1. 5 seconds is given to preview the message on server side. Client is
+           then terminated automatically.
+
+SERVER TERMINATION
+    Multiple way to terminate the server provided below:
+       - Press [CTRL+C] on server side Terminal
+       - Press 'Shutdown' button on server side window.
+
+CLIENT TERMINATION
+    Multiple way to terminate the client provided below:
+      - Press [CTRL+C] on client side Terminal
+      - Type 'quit' and send press [CTRL+D]
+
+KEYBOARD SHORTCUTS
+    [CTRL+C] - used for terminating a Client or a Server from the Terminal
+    [CTRL+D] - used on client side to send a message to the server
+    [ENTER]  - while typing a message, this button lets the user to type on a
+               new line
+    [RightCtrl+F7] - used for switching back to a proper Ubuntu UI to access
+                     Terminals
+    [RightCtrl+F8] - used for switching to the server window
+
+ASSUMPTIONS
+    client execution (launch)
+       server must be running before connecting the client
+    client reconnection
+       the clients that have been disconnected and reconnected are treated as
+       new clients
+    redirection from file
+       if the following command has been used:
+          gcc client.c -o client;./client < filename
+       to connect to the server, then the information will be displayed for
+       5 seconds and then client will be disconnected. No input is allowed
+       in this case
+
+EXTRA FUNCTIONALITY
+    server capacity
+       whenever the number of concurrently connected clients reaches 5, server
+       will reject other clients. Client's will get notified
+    online status
+       the number of connected clients is displayed on the server side
+    client window reset
+       whenever the number of concurrently connected clients becomes 0, server
+       automatically clears all the previous data
+    client name
+       the client name of each client is not unique; however, the server
+       interprets it as a unique name. Client's name is the name of the
+       executable file.
+    socket file location
+       whenever socket connection is established, the file is created inside
+       a 'tmp' folder. Upon restarting the system, this file gets deleted.
+       Full file destination: /tmp/a2-.socket
+
+LIMITATIONS
+    server termination
+       once the server is terminated by [CTRL+C] or clicking a 'shutdown'
+       button, all of the currently connected clients get disconnected. Based
+       on requirement, client notification is not required.
+    client communication
+       the communication between clients is not possible in this version of the
+       server. Technically, server window allows all of the connected clients
+       to read message between each other, but no direct communication.
+    client interaction
+       currently, this desktop environment displays the output only. It is
+       completely user unfriendly, and does not allow the client to interact
+       with display server to send the messages. The only user interaction that
+       is possible is the 'shutdown' button.
+       Improvement Suggestion:
+          It is suggested to add an input near the client's name, where user
+          would be able to type any message, OR a separate button which will
+          bring an input window for a specific client. Each input OR a button
+          click must contain the client's ID or a NAME to uniquely identify each
+          client. Once client sends the message, server needs to catch client's
+          ID or a NAME and push the message to the appropiate window.
+    client disconnection
+       the window of a disconnected client remains open. Once the same client
+       is reconnected, the previously used window is not utilised, a new window
+       is created instead. All the windows clear automatically when user count
+       is 0.
+
+KNOWN BUGS
+    client disconnection & reconnection
+      sometimes server might get stuck in an infinite loop when clients keep on
+      disconnecting or reconnecting. However, this is not a requirement, but
+      an attempt to implement an extra feature. Reason of happening: unknown
+
+REFERENCE
+    utilisation of select():
+      select(), FD_SET(), FD_CLR(), FD_ISSET(), FD_ZERO() (n.d.). Retrieved from:
+          https://www.mkssoftware.com/docs/man3/select.3.asp
+      select() (n.d.). Retireved from:
+          http://man7.org/linux/man-pages/man2/select.2.html
+
+    utilisation of FD_SETSIZE:
+      Waiting for Input or Output. (June, 2003). Retrieved from:
+          http://www.delorie.com/gnu/docs/glibc/libc_248.html
